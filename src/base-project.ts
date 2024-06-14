@@ -18,6 +18,17 @@ export class BaseProject {
     this.podMatcher = new PodMatcher(this.root, this.podModulePrefix);
   }
   matchPathToType(filePath: string) {
-    return this.classicMatcher.metaFromPath(filePath) || this.podMatcher.metaFromPath(filePath);
+    const item = this.classicMatcher.metaFromPath(filePath) || this.podMatcher.metaFromPath(filePath);
+
+    if (item && filePath.toLowerCase().includes('/app/features/')) {
+      item.name = 'feature' + filePath.split('/app/features')[1].replace('/components/', '/');
+      item.name = item.name.split('/').slice(0, -1).join('/');
+    }
+
+    if (item && filePath.toLowerCase().includes('/app/shared/')) {
+      item.name = 'shared/' + item.name;
+    }
+
+    return item;
   }
 }
